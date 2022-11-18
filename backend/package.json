@@ -1,0 +1,56 @@
+{
+  "name": "todo-backend",
+  "version": "1.0.0",
+  "description": "An Express backend for Lmpl Books",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "lint": "eslint src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Umang1499/lmpl-books-backend.git"
+  },
+  "author": "Umang1499",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Umang1499/lmpl-books-backend/issues"
+  },
+  "homepage": "https://github.com/Umang1499/lmpl-books-backend#readme",
+  "dependencies": {
+    "@logtail/node": "^0.1.12",
+    "@logtail/winston": "^0.1.12",
+    "@prisma/client": "^3.10.0",
+    "axios": "^0.27.2",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "express-rate-limit": "^6.3.0",
+    "helmet": "^5.0.2",
+    "http-status-codes": "^2.2.0",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0",
+    "request-ip": "^2.2.0",
+    "winston": "^3.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.10.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-security": "^1.4.0",
+    "husky": "^7.0.4",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
+    "prisma": "^3.10.0"
+  }
+}

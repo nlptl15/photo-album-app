@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+    previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  email      String   @unique
+  password   String   @db.VarChar(80)
+  pswdSKey   String   @map("pswd_s_key") @db.VarChar(80)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  modifiedAt DateTime @updatedAt @map("modified_at")
+
+  images Image[]
+  labels Label[]
+
+  @@map("users")
+}
+
+model Image {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  imageSrc  String  @map("image_src") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  modifiedAt  DateTime @updatedAt @map("modified_at")
+
+  user        User?     @relation(fields: [userId], references: [id])
+  userId      Int      @map("user_id") @db.Int
+
+  imageLabels LabelsOnImages[] 
+
+  @@fulltext([title])
+  @@map("images")
+}
+
+
+model Label {
+  id          Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+
+  assignedAt DateTime @default(now())
+  user        User?     @relation(fields: [userId], references: [id])
+  userId      Int      @map("user_id") @db.Int
+
+  labelImages LabelsOnImages[] 
+  @@map("labels")
+}
+
+
+model LabelsOnImages {
+  image       Image     @relation(fields: [imageId], references: [id])
+  imageId     Int
+  label   Label @relation(fields: [labelId], references: [id])
+  labelId Int 
+
+  userId     Int
+
+  @@id([imageId, labelId])
+}
