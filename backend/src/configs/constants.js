@@ -18,7 +18,7 @@ const COOKIE_OPTIONS = {
   maxAge: 60 * 60 * 24 * 7 * 1000,
 };
 
-const AUTH_COOKIE = 'todo_auth_tkn';
+const AUTH_COOKIE = 'pa_auth_tkn';
 
 module.exports = {
   DataStatus,

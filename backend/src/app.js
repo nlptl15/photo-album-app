@@ -146,7 +146,7 @@ app.post('/image-upload', auth(), uploadImg.single('image'), async (req, res) =>
       } else {
         result.error = true;
         result.status = StatusCodes.INTERNAL_SERVER_ERROR;
-        result.message = 'Something went wrong while creating todo.';
+        result.message = 'Something went wrong while creating image.';
       }
     }
 

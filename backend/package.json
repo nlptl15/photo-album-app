@@ -1,7 +1,7 @@
 {
-  "name": "todo-backend",
+  "name": "photo-album-backend",
   "version": "1.0.0",
-  "description": "An Express backend for Lmpl Books",
+  "description": "An Express backend for photo album Books",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
