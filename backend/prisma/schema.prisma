@@ -22,7 +22,7 @@ model User {
   modifiedAt DateTime @updatedAt @map("modified_at")
 
   images Image[]
-  labels Label[]
+
 
   @@map("users")
 }
@@ -37,33 +37,8 @@ model Image {
   user        User?     @relation(fields: [userId], references: [id])
   userId      Int      @map("user_id") @db.Int
 
-  imageLabels LabelsOnImages[] 
+  imageLabels String? @map("image_labels") @db.Text
 
   @@fulltext([title])
   @@map("images")
-}
-
-
-model Label {
-  id          Int      @id @default(autoincrement())
-  name       String   @db.VarChar(255)
-
-  assignedAt DateTime @default(now())
-  user        User?     @relation(fields: [userId], references: [id])
-  userId      Int      @map("user_id") @db.Int
-
-  labelImages LabelsOnImages[] 
-  @@map("labels")
-}
-
-
-model LabelsOnImages {
-  image       Image     @relation(fields: [imageId], references: [id])
-  imageId     Int
-  label   Label @relation(fields: [labelId], references: [id])
-  labelId Int 
-
-  userId     Int
-
-  @@id([imageId, labelId])
 }

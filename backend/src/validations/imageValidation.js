@@ -3,6 +3,7 @@ const Joi = require('joi');
 const createImage = {
   body: Joi.object().keys({
     title: Joi.string().trim().required(),
+    imageLabels: Joi.string(),
   }),
 };
 
@@ -17,15 +18,16 @@ const updateById = {
     id: Joi.number().required(),
   }),
   body: Joi.object().keys({
+    imageId: Joi.number().required(),
     title: Joi.string().trim().required(),
-    description: Joi.string().trim().required(),
-    status: Joi.number().required(),
+    imageLabels: Joi.string(),
   }),
 };
 
 const deleteById = {
   params: Joi.object().keys({
     id: Joi.number().required(),
+    confirmPassword: Joi.string().required(),
   }),
 };
 

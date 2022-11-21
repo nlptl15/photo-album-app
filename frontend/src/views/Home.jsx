@@ -4,25 +4,21 @@ import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import PrivateWrapper from '../layouts/Private';
 import useStyles from '../theme/styles/views/Todos';
-import CreateTodo from '../components/images/CreateImage';
-import TabPanel from '../components/common/TabPanel';
-import AppBar from '@mui/material/AppBar';
 import { deleteImageById, getImages } from '../services/Images';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import useToastr from '../hooks/useToastr';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import SwipeableViews from 'react-swipeable-views';
 import TextField from '@mui/material/TextField';
-import TodoTile from '../components/images/ImageTile';
-import TodoDetails from '../components/images/ImageDetails';
+import ImageTile from '../components/images/ImageTile';
+import ImageDetails from '../components/images/ImageDetails';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
-import ListSubheader from '@mui/material/ListSubheader';
 import IconButton from '@mui/material/IconButton';
-import InfoIcon from '@mui/icons-material/Info';
-import CreateImage from '../components/images/CreateImage';
+import ImageUploader from '../components/images/ImageUploader';
+import { Delete } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
+import ConfirmImageDeleteDialog from '../components/images/ConfirmImageDeleteDialog';
 
 function a11yProps(index) {
   return {
@@ -40,7 +36,10 @@ const ImageGallery = () => {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [openImageUploadForm, setOpenImageUploadForm] = useState(false);
+  const [openImageDeleteDialog, setOpenImageDeleteDialog] = useState(false);
+  const [confirmedPassword, setConfimedPassword] = useState('');
 
+  const [processing, setProcessing] = useState(false);
   const [value, setValue] = React.useState(0);
   const [searchText, setSearchText] = useState('');
 
@@ -52,17 +51,18 @@ const ImageGallery = () => {
     setValue(index);
   };
 
-  const deleteTodo = () => {
-    deleteImageById(selectedImage)
+  const deleteImage = () => {
+    setProcessing(true);
+    deleteImageById(selectedImage, confirmedPassword)
       .then((result) => {
         if (result.success) {
-          showSuccessToastr('Todo deleted successfully.');
+          showSuccessToastr('Image deleted successfully.');
         } else {
           showErrorToastr(
             result?.data?.message || result?.message || 'Something went wrong.'
           );
         }
-
+        setProcessing(false);
         setReloadRows(!reloadRows);
       })
       .catch((error) => {
@@ -71,7 +71,7 @@ const ImageGallery = () => {
             error?.message ||
             'Something went wrong. Please try again.'
         );
-
+        setProcessing(false);
         setReloadRows(!reloadRows);
       });
   };
@@ -81,6 +81,7 @@ const ImageGallery = () => {
       .then((result) => {
         if (result.success) {
           const { data } = result;
+          console.log(data);
           setRows(data?.images || []);
         }
       })
@@ -95,6 +96,27 @@ const ImageGallery = () => {
   }, [reloadRows]);
   const searchList = () => {
     setReloadRows(!reloadRows);
+  };
+
+  const useStyles2 = makeStyles((theme) => ({
+    outerDiv: {
+      '&:hover': {
+        '& $ImageListItemBar': {
+          display: 'flex',
+        },
+      },
+    },
+    ImageListItemBar: (props) => ({
+      display: 'none',
+    }),
+  }));
+
+  const classes2 = useStyles2();
+
+  const confirmDelete = (id) => {
+    setSelectedImage(id);
+    setConfimedPassword('');
+    setOpenImageDeleteDialog(true);
   };
 
   return (
@@ -137,10 +159,20 @@ const ImageGallery = () => {
           </Button>
         </div>
       </div>
-      <ImageList variant='quilted' cols={4}>
+      <ImageList
+        variant='woven'
+        sx={{ width: '100%', height: '100%' }}
+        cols={4}
+        rowHeight={300}
+      >
         {rows.map((item) => (
-          <ImageListItem key={item.img}>
+          <ImageListItem
+            key={item.img}
+            sx={{ m: 1 }}
+            className={classes2.outerDiv}
+          >
             <img
+              crossorigin='anonymous'
               src={`${item.imageSrc}?w=248&fit=crop&auto=format`}
               srcSet={`${item.imageSrc}?w=248&fit=crop&auto=format&dpr=2 2x`}
               alt={item.title}
@@ -148,13 +180,15 @@ const ImageGallery = () => {
             />
             <ImageListItemBar
               title={item.title}
-              subtitle={item.author}
+              subtitle={item.imageLabels}
+              className={classes2.ImageListItemBar}
               actionIcon={
                 <IconButton
                   sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
                   aria-label={`info about ${item.title}`}
+                  onClick={() => confirmDelete(item.id)}
                 >
-                  <InfoIcon />
+                  <Delete color='error' />
                 </IconButton>
               }
             />
@@ -162,20 +196,28 @@ const ImageGallery = () => {
         ))}
       </ImageList>
       {openImageUploadForm && (
-        <CreateImage
+        <ImageUploader
           editId={selectedImage}
-          title='Add Image'
+          title={selectedImage ? 'Edit Image' : 'Add Image'}
           isOpen={openImageUploadForm}
           onSave={() => {
             setOpenImageUploadForm(false);
             setSelectedImage(null);
             setReloadRows(!reloadRows);
           }}
+        />
+      )}
+      {openImageDeleteDialog && (
+        <ConfirmImageDeleteDialog
           onClose={() => {
             setOpenImageUploadForm(false);
             setSelectedImage(null);
             setReloadRows(!reloadRows);
           }}
+          onConfirm={deleteImage}
+          processing={processing}
+          value={confirmedPassword}
+          setValue={setConfimedPassword}
         />
       )}
     </PrivateWrapper>

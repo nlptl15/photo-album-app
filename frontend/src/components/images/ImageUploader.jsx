@@ -1,183 +1,165 @@
 import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import ReactS3Uploader from 'react-s3-uploader';
-import { Button } from '@material-ui/core';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { ArrowDropDown, CloudUpload } from '@material-ui/icons';
-import {
-  removeProgramImages,
-  updateProgramImages,
-} from '../../services/Programs';
-import { uploadImage } from '../../services/Assets';
-import ConfirmDialog from '../ConfirmDialog';
-import ViewImage from './ViewImage';
-import createFeatured, {
-  deleteFeaturedByProgramId,
-} from '../../services/Featured';
-import SnackbarMessage from '../SnackbarMessage';
+import { Button, TextField, FormControl } from '@material-ui/core';
+import { Controller, useForm } from 'react-hook-form';
+import axios from 'axios';
+import useToastr from '../../hooks/useToastr';
+import Validations from '../../utils/Validations';
+import { CloudUpload } from '@mui/icons-material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import { uploadImage } from '../../services/Images';
+import ChipInput from 'material-ui-chip-input';
+import TagsInput from '../common/TagsInput';
 
-const UploadImage = ({
-  caption,
-  name,
-  programId,
-  chapterId,
-  value,
-  episode,
-}) => {
-  const hiddenFileInput = useRef(null);
+export default function ImageUploader({ onSave, title }) {
+  const imageRef = useRef();
+  const { control, handleSubmit, setValue } = useForm();
+  const { showErrorToastr, showSuccessToastr } = useToastr();
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [confirmDialog, setConfirmDialog] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [file, setFile] = useState();
+  const [processing, setProcessing] = useState(false);
   const [fileSelected, setFileSelected] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [imageURL, setImageURL] = useState('');
-  const [viewModel, setViewModel] = useState(false);
-  const [snackbarMeesage, setSnackbarMeesage] = useState({
-    show: false,
-    type: '',
-    message: '',
-  });
+  const [imageLabels, setImageLabels] = useState([]);
 
-  useEffect(() => {
-    setImageURL(value);
-  }, [value]);
+  const onSubmit = async (data) => {
+    setProcessing(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('title', data.title);
+      formData.append('imageLabels', imageLabels.join(','));
+      console.log(formData);
+      const result = await uploadImage(formData);
 
-  const handleClick = () => {
-    hiddenFileInput.current.click();
-  };
-
-  const getSignedUrl = (file, callback) => {
-    setSnackbarMeesage({
-      message: '',
-      type: '',
-      show: false,
-    });
-    if (file.type.split('/')[0] === 'image') {
-      const params = {
-        objectName: file.name,
-        contentType: file.type,
-        programId,
-        chapterId,
-      };
-      uploadImage(params)
-        .then((res) => {
-          callback(res.data);
-          setFileSelected(true);
-        })
-        .catch(() => {
-          setHasError(true);
-          setErrorMessage('Something went wrong.');
-        });
-    } else {
-      setSnackbarMeesage({
-        message: `Please select image file only.`,
-        type: 'error',
-        show: true,
-      });
-    }
-  };
-
-  const onProgress = (p) => {
-    setProgress(p);
-  };
-  const onError = (error) => {
-    setHasError(true);
-    setErrorMessage(error);
-  };
-  const onFinish = (data) => {
-    const URL = data.publicUrl;
-    setProgress(100);
-    setProgress(0);
-    setFileSelected(false);
-    setImageURL(URL);
-
-    updateProgramImages(programId, chapterId, {
-      image: name,
-      src: URL,
-      chapterOnly: episode,
-    });
-    if (name === 'featuredImage') {
-      createFeatured({ programId, url: URL });
-    }
-  };
-
-  const handleManageClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const removeImage = () => {
-    removeProgramImages(programId, chapterId, {
-      image: name,
-      chapterOnly: episode,
-    }).then(() => {
-      if (name === 'featuredImage') {
-        deleteFeaturedByProgramId(programId);
+      if (result.success) {
+        showSuccessToastr('Image uploaded successfully.');
+      } else {
+        showErrorToastr(
+          result?.data?.message || result?.message || 'Something went wrong.'
+        );
       }
-      setConfirmDialog(false);
-      setImageURL('');
-    });
+      setProcessing(false);
+      onSave();
+    } catch (e) {
+      console.log(e);
+      setHasError(true);
+      showErrorToastr(
+        e?.data?.message ||
+          e?.message ||
+          e?.response?.message ||
+          'Something went wrong.'
+      );
+      setErrorMessage(
+        e?.message || e?.response?.message || 'Something went wrong.'
+      );
+    }
   };
+
+  const handleClick = () => imageRef.current.click();
+  const handleSelecetedTags = (tags) => setImageLabels(tags);
 
   return (
-    <>
-      <ReactS3Uploader
-        getSignedUrl={getSignedUrl}
-        accept='image/*'
-        onProgress={onProgress}
-        onError={onError}
-        onFinish={onFinish}
-        uploadRequestHeaders={{
-          'x-amz-acl': 'public-read',
-        }}
-        contentDisposition='auto'
-        inputRef={hiddenFileInput}
-        name={name}
-        style={{ width: 0, height: 0, display: 'none' }}
-      />
+    <Dialog open fullWidth maxWidth='sm' onClose={onSave}>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <form id='manage-image-form' onSubmit={handleSubmit(onSubmit)}>
+          <input
+            filename={file}
+            onChange={(e) => {
+              setFile(e.target.files[0]);
+              setFileSelected(true);
+            }}
+            type='file'
+            hidden
+            ref={imageRef}
+            accept='image/*'
+          ></input>
+          <Controller
+            control={control}
+            id='title'
+            name='title'
+            rules={{ ...Validations.REQUIRED }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <TextField
+                fullWidth
+                margin='dense'
+                label='Title'
+                variant='outlined'
+                focused
+                value={value}
+                onChange={onChange}
+                error={!!error}
+                helperText={error ? error?.message : null}
+              />
+            )}
+          />
+          <FormControl style={{ width: '100%', margin: '10px 0' }}>
+            {/* <ChipInput
+              variant='outlined'
+              label='Labels'
+              defaultValue={imageLabels}
+              onAdd={(c) => {
+                setImageLabels((ps) => [...ps, c]);
+              }}
+            /> */}
+            <TagsInput
+              selectedTags={handleSelecetedTags}
+              fullWidth
+              variant='outlined'
+              id='lables'
+              name='lables'
+              placeholder='Add label'
+              label='Labels'
+            />
+          </FormControl>
 
-      {imageURL ? (
-        <div>
-          <Button onClick={handleClick} onClick={handleManageClick} button>
-            {!fileSelected && `Upload New Image`}
-            {!hasError &&
-              fileSelected &&
-              progress < 100 &&
-              `File Uploading (${progress}%)`}
-            {!hasError && fileSelected && progress === 100 && 'File Uploaded'}
-            {hasError && 'Error'}
-          </Button>
-        </div>
-      ) : (
+          {imageURL ? (
+            <div>
+              <Button onClick={handleClick}>
+                {!fileSelected && `Upload New Image`}
+                {!hasError && fileSelected && 'File Uploaded'}
+                {hasError && 'Error'}
+              </Button>
+            </div>
+          ) : (
+            <Button
+              onClick={handleClick}
+              fullWidth
+              variant='outlined'
+              startIcon={<CloudUpload />}
+              title={errorMessage}
+            >
+              {!fileSelected && `Upload New Image`}
+              {!hasError && fileSelected && 'File Uploaded'}
+              {hasError && 'Error'}
+            </Button>
+          )}
+        </form>
+      </DialogContent>
+
+      <DialogActions>
         <Button
-          onClick={handleClick}
-          fullWidth
-          variant='outlined'
-          startIcon={<CloudUpload />}
-          title={errorMessage}
+          disabled={hasError || !fileSelected}
+          form='manage-image-form'
+          type='submit'
+          color='primary'
+          variant='contained'
         >
-          {!fileSelected && caption}
-          {!hasError &&
-            fileSelected &&
-            progress < 100 &&
-            `File Uploading (${progress}%)`}
-          {!hasError && fileSelected && progress === 100 && 'File Uploaded'}
-          {hasError && 'Error'}
+          Submit
         </Button>
-      )}
-    </>
+        <Button onClick={onSave}>Cancel</Button>
+      </DialogActions>
+    </Dialog>
   );
-};
+}
 
-UploadImage.propTypes = {
-  name: PropTypes.string.isRequired,
-  imageId: PropTypes.number.isRequired,
+ImageUploader.propTypes = {
+  title: PropTypes.string.isRequired,
+  onSave: PropTypes.func.isRequired,
 };
-
-export default UploadImage;

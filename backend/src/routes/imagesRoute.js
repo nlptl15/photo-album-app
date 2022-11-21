@@ -11,6 +11,11 @@ router.post('/', auth(), validate(TodoValidation.createTodo), imagesController.c
 router.get('/', auth(), imagesController.getList);
 router.get('/:id', auth(), validate(TodoValidation.viewById), imagesController.viewById);
 router.post('/:id', auth(), validate(TodoValidation.updateById), imagesController.updateById);
-router.delete('/:id', auth(), validate(TodoValidation.deleteById), imagesController.deleteById);
+router.post(
+  '/:id/remove',
+  auth(),
+  validate(TodoValidation.deleteById),
+  imagesController.deleteById
+);
 
 module.exports = router;

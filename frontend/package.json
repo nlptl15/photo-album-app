@@ -14,6 +14,8 @@
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.27.2",
     "clsx": "^1.1.1",
+    "downshift": "^7.0.1",
+    "material-ui-chip-input": "^1.1.0",
     "material-ui-color": "^1.2.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",

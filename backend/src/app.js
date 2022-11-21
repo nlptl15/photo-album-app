@@ -16,6 +16,7 @@ const errorHandler = require('./middlewares/ErrorMiddleware');
 const imagesRoute = require('./routes/imagesRoute');
 const authRoute = require('./routes/authRoute');
 const multer = require('multer');
+const e = require('express');
 
 const app = express();
 
@@ -56,13 +57,26 @@ passport.use('jwt', jwtStrategy);
 app.use('/auth/login', authLimiter);
 
 // Application routes
-app.use('/images', imagesRoute);
+app.use('/images-data', imagesRoute);
 app.use('/auth', authRoute);
 
+const fs = require('fs');
+app.use('/images', express.static('images'));
+app.get('/images/:imageName', (req, res) => {
+  // do a bunch of if statements to make sure the user is
+  // authorized to view this image, then
+
+  const imageName = req.params.imageName;
+  const readStream = fs.createReadStream(`images/${imageName}`);
+  readStream.pipe(res);
+});
+
 const storage = multer.diskStorage({
-  filename: (req, file, cb) => {
-    const fileName = file.originalname.toLowerCase().split(' ').join('-');
-    cb(null, new Date.now() + '-' + fileName);
+  destination: function (req, file, cb) {
+    cb(null, './images');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/').reverse()[0]);
   },
 });
 
@@ -80,18 +94,72 @@ const upload = multer({
       return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
     }
   },
-  dest: 'public/uploads/',
 });
 
-app.post('/image-upload', upload.single('profileImg'), (req, res, next) => {
+const uploadImg = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == 'image/png' ||
+      file.mimetype == 'image/jpg' ||
+      file.mimetype == 'image/jpeg'
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  },
+});
+
+const imagesModel = require('../src/models/imagesModel');
+const auth = require('./middlewares/AuthMiddleware');
+
+app.post('/image-upload', auth(), uploadImg.single('image'), async (req, res) => {
+  const result = {
+    error: false,
+    data: {},
+  };
   try {
-    console.log(req.file);
-    console.log('/images/' + req.file.filename);
-    res.json({ imageUrl: url + '/images/' + req.file.filename });
+    const imagePath = req.file.path;
+    const { body } = req;
+    console.log(req.body);
+    const saveData = {
+      title: body.title,
+      imageSrc: 'http://localhost:3010/' + imagePath,
+      userId: req.user.id,
+      imageLabels: body.imageLabels || '',
+    };
+    if (body.imageId) {
+      const qData = await imagesModel.updateById(body.imageId, saveData);
+      if (qData) {
+        result.data = qData;
+      } else {
+        result.error = true;
+        result.status = StatusCodes.INTERNAL_SERVER_ERROR;
+        result.message = 'Something went wrong while creating todo.';
+      }
+    } else {
+      const qData = await imagesModel.save(saveData);
+      if (qData) {
+        result.data = qData;
+      } else {
+        result.error = true;
+        result.status = StatusCodes.INTERNAL_SERVER_ERROR;
+        result.message = 'Something went wrong while creating todo.';
+      }
+    }
+
+    if (result.error) {
+      next(ApiError(result.status, result.message));
+    } else {
+      res.json({ success: true, data: result.data });
+    }
   } catch (error) {
     console.log(error);
   }
 });
+
 // send back a 404 error for any unknown api request
 app.all('*', (req, res, next) => {
   next(ApiError(StatusCodes.NOT_FOUND, getReasonPhrase(StatusCodes.NOT_FOUND)));

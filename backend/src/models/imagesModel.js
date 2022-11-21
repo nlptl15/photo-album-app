@@ -13,6 +13,7 @@ const save = async (data) => {
       title: data.title,
       imageSrc: data.imageSrc,
       userId: data.userId,
+      imageLabels: data.imageLabels,
     },
   });
   return created.id;
@@ -26,7 +27,12 @@ const viewById = async (id) => {
 const updateById = async (id, data) => {
   const updated = await prisma.image.update({
     where: { id },
-    data,
+    data: {
+      title: data.title,
+      imageSrc: data.imageSrc,
+      userId: data.userId,
+      imageLabels: data.imageLabels,
+    },
   });
 
   return updated.id;
@@ -53,6 +59,9 @@ const fetchAll = async (skip, searchString, userId) => {
         userId,
         ...(searchString && {
           title: { search: searchString },
+        }),
+        ...(searchString && {
+          imageLabels: { search: searchString },
         }),
       },
     }),
