@@ -63,7 +63,7 @@ const viewById = async (params) => {
     } else {
       result.error = true;
       result.status = StatusCodes.NOT_FOUND;
-      result.message = 'No Todo Found.';
+      result.message = 'No Image Found.';
     }
   } catch (e) {
     result.error = true;

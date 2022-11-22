@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { Controller, useForm } from 'react-hook-form';
 import Validations from '../../utils/Validations';
 import {
-  createTodo,
+  uploadImage,
   getImageById,
   updateImageById,
 } from '../../services/Images';
@@ -129,7 +129,7 @@ const CreateImage = ({ title, onClose, editId, onSave }) => {
       <DialogActions>
         <Button
           type='submit'
-          form='manage-todo'
+          form='manage-Image'
           autoFocus
           endIcon={processing && <CircularProgress size={25} />}
           disabled={processing}
