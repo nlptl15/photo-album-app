@@ -88,7 +88,7 @@ const updateById = async (params, data) => {
     } else {
       result.error = true;
       result.status = StatusCodes.INTERNAL_SERVER_ERROR;
-      result.message = 'Something went wrong while updating todo. Please try again.';
+      result.message = 'Something went wrong while updating Image. Please try again.';
     }
   } catch (e) {
     result.error = true;

@@ -3,7 +3,7 @@ const express = require('express');
 const imagesController = require('../controllers/imagesController');
 const auth = require('../middlewares/AuthMiddleware');
 const validate = require('../middlewares/ValidatorMiddleware');
-const TodoValidation = require('../validations/imageValidation');
+const ImageValidation = require('../validations/imageValidation');
 
 const router = express.Router();
 
