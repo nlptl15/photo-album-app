@@ -60,7 +60,6 @@ const deleteById = async (req, res, next) => {
 
 const getList = async (req, res, next) => {
   try {
-    console.log('getList');
     const result = await imageService.getList(req.query, req.user);
 
     if (result.error) {

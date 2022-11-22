@@ -44,8 +44,8 @@
 
 // export default Default;
 
-import { amber, deepOrange, grey, blue, green } from "@mui/material/colors";
-import { palette, palette2 } from "./Palette";
+import { amber, deepOrange, grey, blue, green } from '@mui/material/colors';
+import { palette, palette2 } from './Palette';
 
 // const palette = {
 //   light: {
@@ -60,47 +60,49 @@ import { palette, palette2 } from "./Palette";
 export const getDesignTokens = (mode) => ({
   palette: {
     mode,
-    ...(mode === "light"
+    ...(mode === 'light'
       ? {
-          // palette values for light mode
-          primary: green,
-          divider: green[200],
-          text: {
-            primary: '#000',
-            secondary: green[400],
+          palette: {
+            type: 'light',
+            primary: {
+              main: '#3f51b5',
+            },
+            secondary: {
+              main: '#f50057',
+            },
           },
         }
       : {
-          // palette values for dark mode
-          primary: blue,
-          divider: blue[700],
-          background: {
-            default: blue[900],
-            paper: blue[900],
+          type: 'dark',
+          primary: {
+            main: '#90caf9',
           },
-          text: {
-            primary: "#fff",
-            secondary: grey[500],
+          secondary: {
+            main: '#f48fb1',
+          },
+          background: {
+            default: '#212121',
+            paper: '#424242',
           },
         }),
   },
   typography: {
     fontFamily: [
-      "Oswald",
-      "Roboto",
+      'Oswald',
+      'Roboto',
       '"Helvetica Neue"',
-      "Arial",
-      "sans-serif",
-    ].join(","),
+      'Arial',
+      'sans-serif',
+    ].join(','),
     body1: {
-      fontFamily: "Poppins, Arial, sans-serif",
+      fontFamily: 'Poppins, Arial, sans-serif',
     },
   },
 });
 
 export const getThemedComponents = (mode) => ({
   components: {
-    ...(mode === "light"
+    ...(mode === 'light'
       ? {
           // MuiAppBar: {
           //   styleOverrides: {

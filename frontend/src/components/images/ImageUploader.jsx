@@ -37,12 +37,15 @@ export default function ImageUploader({ onSave, title, editId }) {
       formData.append('image', file);
       formData.append('title', data.title);
       formData.append('imageLabels', imageLabels.join(','));
-      console.log(formData);
       if (editId) formData.append('imageId', editId);
       const result = await uploadImage(formData);
 
       if (result.success) {
-        showSuccessToastr('Image uploaded successfully.');
+        showSuccessToastr(
+          !editId
+            ? 'Image uploaded successfully.'
+            : 'Image re-uploaded successfully.'
+        );
       } else {
         showErrorToastr(
           result?.data?.message || result?.message || 'Something went wrong.'
@@ -51,7 +54,6 @@ export default function ImageUploader({ onSave, title, editId }) {
       setProcessing(false);
       onSave();
     } catch (e) {
-      console.log(e);
       setHasError(true);
       showErrorToastr(
         e?.data?.message ||
@@ -78,7 +80,6 @@ export default function ImageUploader({ onSave, title, editId }) {
             setFileSelected(true);
             setValue('title', res?.data?.title || '');
             setImageURL(res?.data?.imageSrc);
-
             setDImageLabels(res?.data?.imageLabels?.split(',') || []);
           }
           setProcessing(false);
@@ -99,7 +100,7 @@ export default function ImageUploader({ onSave, title, editId }) {
     }
   }, []);
   return (
-    <Dialog open fullWidth maxWidth='sm' onClose={onSave}>
+    <Dialog open fullWidth maxWidth='md' onClose={onSave}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {dataLoaded ? (
@@ -109,6 +110,7 @@ export default function ImageUploader({ onSave, title, editId }) {
                 filename={file}
                 onChange={(e) => {
                   setFile(e.target.files[0]);
+                  setImageURL(URL.createObjectURL(e.target.files[0]));
                   setFileSelected(true);
                 }}
                 type='file'
@@ -139,14 +141,6 @@ export default function ImageUploader({ onSave, title, editId }) {
                 )}
               />
               <FormControl style={{ width: '100%', margin: '10px 0' }}>
-                {/* <ChipInput
-              variant='outlined'
-              label='Labels'
-              defaultValue={imageLabels}
-              onAdd={(c) => {
-                setImageLabels((ps) => [...ps, c]);
-              }}
-            /> */}
                 <TagsInput
                   selectedTags={handleSelecetedTags}
                   fullWidth
@@ -163,8 +157,10 @@ export default function ImageUploader({ onSave, title, editId }) {
                 <div>
                   <img
                     crossorigin='anonymous'
-                    src={`${imageURL}?w=248&fit=crop&auto=format`}
-                    srcSet={`${imageURL}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                    height={350}
+                    width={'100%'}
+                    src={imageURL}
+                    srcSet={imageURL}
                     alt={title}
                     loading='lazy'
                   />
@@ -176,7 +172,7 @@ export default function ImageUploader({ onSave, title, editId }) {
                     title={errorMessage}
                   >
                     {!fileSelected && `Upload New Image`}
-                    {!hasError && fileSelected && editId && 'Edit Image'}
+                    {!hasError && fileSelected && editId && 'Reupload Image'}
                     {!hasError && fileSelected && !editId && 'File Uploaded'}
                     {hasError && 'Error'}
                   </Button>

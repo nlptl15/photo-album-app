@@ -12,10 +12,8 @@ const getList = async (params, user) => {
     const skip = Number(params.skip) || 0;
     const searchString = params.searchString || '';
     const data = await imagesModel.fetchAll(skip, searchString, user.id);
-    console.log(data);
     result.data = data;
   } catch (e) {
-    console.log(e);
     result.error = true;
     result.status = StatusCodes.INTERNAL_SERVER_ERROR;
     result.message = formatErrorMsg(e);
@@ -104,9 +102,6 @@ const deleteById = async (req) => {
     data: {},
   };
   const id = Number(req.params.id) || 0;
-  console.log(req.body);
-  console.log(req.params);
-  console.log(req.user);
   try {
     const isPasswordMatch = await bcrypt.compare(
       req.body.confirmedPassword || '',

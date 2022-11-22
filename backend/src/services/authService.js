@@ -116,7 +116,6 @@ const validateLoggedInUser = async (req) => {
       result.message = 'User unauthorized.';
     }
   } catch (error) {
-    console.log(error);
     result.error = true;
     result.status = StatusCodes.INTERNAL_SERVER_ERROR;
     result.message = formatErrorMsg(error);

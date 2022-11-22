@@ -5,12 +5,8 @@ import Button from '@mui/material/Button';
 import PrivateWrapper from '../layouts/Private';
 import useStyles from '../theme/styles/views/Todos';
 import { deleteImageById, getImages } from '../services/Images';
-import ConfirmDialog from '../components/common/ConfirmDialog';
 import useToastr from '../hooks/useToastr';
-import SwipeableViews from 'react-swipeable-views';
 import TextField from '@mui/material/TextField';
-import ImageTile from '../components/images/ImageTile';
-import ImageDetails from '../components/images/ImageDetails';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
@@ -85,7 +81,6 @@ const ImageGallery = () => {
       .then((result) => {
         if (result.success) {
           const { data } = result;
-          console.log(data);
           setRows(data?.images || []);
         }
       })
@@ -125,13 +120,12 @@ const ImageGallery = () => {
   };
 
   const onEdit = (id) => {
-    console.log(id);
     setSelectedImage(id);
     setOpenImageUploadForm(true);
   };
 
   return (
-    <PrivateWrapper pageName='Image Gallery'>
+    <PrivateWrapper pageName='Image Album'>
       <div className={classes.filterLeft}>
         <div>
           <TextField
@@ -153,7 +147,7 @@ const ImageGallery = () => {
         <div className={classes.moveRight}>
           <Button
             variant='contained'
-            sx={{ mr: 2 }}
+            style={{ marginRight: '20px' }}
             className={classes.searchFilterBtn}
             onClick={() => setReloadRows(!reloadRows)}
           >

@@ -124,7 +124,6 @@ app.post('/image-upload', auth(), uploadImg.single('image'), async (req, res) =>
     const { body } = req;
     const imagePath = req?.file?.path;
 
-    console.log(req.body);
     const saveData = {
       title: body.title,
       imageSrc: 'http://localhost:3010/' + imagePath,
@@ -132,7 +131,7 @@ app.post('/image-upload', auth(), uploadImg.single('image'), async (req, res) =>
       imageLabels: body.imageLabels || '',
     };
     if (body.imageId) {
-      const qData = await imagesModel.updateById(body.imageId, saveData);
+      const qData = await imagesModel.updateById(Number(body?.imageId || 0), saveData);
       if (qData) {
         result.data = qData;
       } else {
@@ -157,7 +156,7 @@ app.post('/image-upload', auth(), uploadImg.single('image'), async (req, res) =>
       res.json({ success: true, data: result.data });
     }
   } catch (error) {
-    console.log(error);
+    // do something
   }
 });
 

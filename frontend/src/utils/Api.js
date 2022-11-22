@@ -1,4 +1,5 @@
 import axios from 'axios';
+import RoutePaths from '../configs/Routes';
 
 export const postApiCall = async (endpoint, data) => {
   const options = {
@@ -17,6 +18,7 @@ export const postApiCall = async (endpoint, data) => {
     const response = await axios(options);
     return response;
   } catch (e) {
+    if (e?.response?.status === 401) window.location.assign(RoutePaths.LOGOUT);
     throw e;
   }
 };
@@ -38,6 +40,7 @@ export const getApiCall = async (endpoint) => {
     const response = await axios(options);
     return response;
   } catch (e) {
+    if (e?.response?.status === 401) window.location.assign(RoutePaths.LOGOUT);
     throw e;
   }
 };
@@ -59,6 +62,7 @@ export const deleteApiCall = async (endpoint) => {
     const response = await axios(options);
     return response;
   } catch (e) {
+    if (e?.response?.status === 401) window.location.assign(RoutePaths.LOGOUT);
     throw e;
   }
 };
@@ -80,6 +84,7 @@ export const postImageApiCall = async (endpoint, data) => {
     const response = await axios(options);
     return response;
   } catch (e) {
+    if (e?.response?.status === 401) window.location.assign(RoutePaths.LOGOUT);
     throw e;
   }
 };

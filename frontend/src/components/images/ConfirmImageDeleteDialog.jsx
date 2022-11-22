@@ -28,6 +28,7 @@ const ConfirmImageDeleteDialog = ({
         variant='standard'
         focused
         fullWidth
+        type='password'
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
