@@ -33,7 +33,6 @@ const ImageGallery = () => {
 
   const [rows, setRows] = useState([]);
   const [reloadRows, setReloadRows] = useState(false);
-
   const [selectedImage, setSelectedImage] = useState(null);
   const [openImageUploadForm, setOpenImageUploadForm] = useState(false);
   const [openImageDeleteDialog, setOpenImageDeleteDialog] = useState(false);
