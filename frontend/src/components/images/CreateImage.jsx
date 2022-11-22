@@ -99,7 +99,7 @@ const CreateImage = ({ title, onClose, editId, onSave }) => {
     <Dialog open fullWidth maxWidth='sm' onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <form id='manage-todo' onSubmit={handleSubmit(onSubmit)}>
+        <form id='manage-image' onSubmit={handleSubmit(onSubmit)}>
           <Box display='flex' flexDirection='column'>
             <Controller
               control={control}
@@ -129,7 +129,7 @@ const CreateImage = ({ title, onClose, editId, onSave }) => {
       <DialogActions>
         <Button
           type='submit'
-          form='manage-todo'
+          form='manage-image'
           autoFocus
           endIcon={processing && <CircularProgress size={25} />}
           disabled={processing}

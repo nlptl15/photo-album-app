@@ -38,7 +38,7 @@ const create = async (data, user) => {
     } else {
       result.error = true;
       result.status = StatusCodes.INTERNAL_SERVER_ERROR;
-      result.message = 'Something went wrong while creating todo.';
+      result.message = 'Something went wrong while creating image.';
     }
   } catch (e) {
     result.error = true;
@@ -88,7 +88,7 @@ const updateById = async (params, data) => {
     } else {
       result.error = true;
       result.status = StatusCodes.INTERNAL_SERVER_ERROR;
-      result.message = 'Something went wrong while updating todo. Please try again.';
+      result.message = 'Something went wrong while updating image. Please try again.';
     }
   } catch (e) {
     result.error = true;

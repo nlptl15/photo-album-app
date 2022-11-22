@@ -21,8 +21,8 @@ const save = async (data) => {
 };
 
 const viewById = async (id) => {
-  const todo = await prisma.image.findUnique({ where: { id } });
-  return todo;
+  const imageData = await prisma.image.findUnique({ where: { id } });
+  return imageData;
 };
 
 const updateById = async (id, data) => {
