@@ -27,14 +27,12 @@ function a11yProps(index) {
     'aria-controls': `full-width-tabpanel-${index}`,
   };
 }
-
 const ImageGallery = () => {
   const classes = useStyles();
   const { showErrorToastr, showSuccessToastr } = useToastr();
 
   const [rows, setRows] = useState([]);
   const [reloadRows, setReloadRows] = useState(false);
-
   const [selectedImage, setSelectedImage] = useState(null);
   const [openImageUploadForm, setOpenImageUploadForm] = useState(false);
   const [openImageDeleteDialog, setOpenImageDeleteDialog] = useState(false);

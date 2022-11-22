@@ -38,7 +38,7 @@ const create = async (data, user) => {
     } else {
       result.error = true;
       result.status = StatusCodes.INTERNAL_SERVER_ERROR;
-      result.message = 'Something went wrong while creating image.';
+      result.message = 'Something went wrong while creating Image.';
     }
   } catch (e) {
     result.error = true;
@@ -63,7 +63,7 @@ const viewById = async (params) => {
     } else {
       result.error = true;
       result.status = StatusCodes.NOT_FOUND;
-      result.message = 'No Todo Found.';
+      result.message = 'No Image Found.';
     }
   } catch (e) {
     result.error = true;
@@ -88,7 +88,7 @@ const updateById = async (params, data) => {
     } else {
       result.error = true;
       result.status = StatusCodes.INTERNAL_SERVER_ERROR;
-      result.message = 'Something went wrong while updating image. Please try again.';
+      result.message = 'Something went wrong while updating Image. Please try again.';
     }
   } catch (e) {
     result.error = true;
