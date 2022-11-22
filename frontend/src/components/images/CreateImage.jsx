@@ -37,7 +37,7 @@ const CreateImage = ({ title, onClose, editId, onSave }) => {
           imageUrl,
         });
         if (result.success) {
-          showSuccessToastr('Todo updated successfully.');
+          showSuccessToastr('Image updated successfully.');
         } else {
           showErrorToastr(
             result?.data?.message || result?.message || 'Something went wrong.'

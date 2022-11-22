@@ -38,7 +38,7 @@ const create = async (data, user) => {
     } else {
       result.error = true;
       result.status = StatusCodes.INTERNAL_SERVER_ERROR;
-      result.message = 'Something went wrong while creating todo.';
+      result.message = 'Something went wrong while creating Image.';
     }
   } catch (e) {
     result.error = true;
