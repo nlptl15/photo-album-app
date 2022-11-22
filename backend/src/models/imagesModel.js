@@ -57,7 +57,7 @@ const fetchAll = async (skip, searchString, userId) => {
                         searchString
                           ? Prisma.sql` AND ( title LIKE ${searchStr} or image_labels LIKE ${searchStr} );`
                           : Prisma.empty
-                      }`;
+                      } ORDER by created_at DESC`;
 
   return {
     totalRecords: data.length || 0,
