@@ -19,6 +19,7 @@ import ImageUploader from '../components/images/ImageUploader';
 import { Delete } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import ConfirmImageDeleteDialog from '../components/images/ConfirmImageDeleteDialog';
+import EditIcon from '@mui/icons-material/Edit';
 
 function a11yProps(index) {
   return {
@@ -57,13 +58,18 @@ const ImageGallery = () => {
       .then((result) => {
         if (result.success) {
           showSuccessToastr('Image deleted successfully.');
+          setOpenImageDeleteDialog(false);
+          setSelectedImage(null);
+          setReloadRows(!reloadRows);
         } else {
           showErrorToastr(
             result?.data?.message || result?.message || 'Something went wrong.'
           );
+          setOpenImageDeleteDialog(false);
+          setSelectedImage(null);
+          setReloadRows(!reloadRows);
         }
         setProcessing(false);
-        setReloadRows(!reloadRows);
       })
       .catch((error) => {
         showErrorToastr(
@@ -94,6 +100,7 @@ const ImageGallery = () => {
         setRows([]);
       });
   }, [reloadRows]);
+
   const searchList = () => {
     setReloadRows(!reloadRows);
   };
@@ -117,6 +124,12 @@ const ImageGallery = () => {
     setSelectedImage(id);
     setConfimedPassword('');
     setOpenImageDeleteDialog(true);
+  };
+
+  const onEdit = (id) => {
+    console.log(id);
+    setSelectedImage(id);
+    setOpenImageUploadForm(true);
   };
 
   return (
@@ -183,13 +196,22 @@ const ImageGallery = () => {
               subtitle={item.imageLabels}
               className={classes2.ImageListItemBar}
               actionIcon={
-                <IconButton
-                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
-                  aria-label={`info about ${item.title}`}
-                  onClick={() => confirmDelete(item.id)}
-                >
-                  <Delete color='error' />
-                </IconButton>
+                <>
+                  <IconButton
+                    sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                    aria-label={`info about ${item.title}`}
+                    onClick={() => confirmDelete(item.id)}
+                  >
+                    <Delete color='error' />
+                  </IconButton>
+                  <IconButton
+                    sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                    aria-label={`info about ${item.title}`}
+                    onClick={() => onEdit(item.id)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </>
               }
             />
           </ImageListItem>
@@ -210,7 +232,7 @@ const ImageGallery = () => {
       {openImageDeleteDialog && (
         <ConfirmImageDeleteDialog
           onClose={() => {
-            setOpenImageUploadForm(false);
+            setOpenImageDeleteDialog(false);
             setSelectedImage(null);
             setReloadRows(!reloadRows);
           }}

@@ -22,16 +22,17 @@ const ConfirmImageDeleteDialog = ({
       <DialogContentText>
         Please enter your password to delete image.
       </DialogContentText>
-    </DialogContent>
-    <DialogActions>
       <TextField
         margin='dense'
-        label='Title'
-        variant='outlined'
+        label='Password'
+        variant='standard'
         focused
+        fullWidth
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
+    </DialogContent>
+    <DialogActions>
       <Button
         onClick={onConfirm}
         autoFocus

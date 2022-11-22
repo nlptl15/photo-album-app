@@ -27,7 +27,9 @@ const updateById = {
 const deleteById = {
   params: Joi.object().keys({
     id: Joi.number().required(),
-    confirmPassword: Joi.string().required(),
+  }),
+  body: Joi.object().keys({
+    confirmedPassword: Joi.string().required(),
   }),
 };
 

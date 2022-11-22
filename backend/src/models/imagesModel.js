@@ -6,6 +6,7 @@
  */
 const prisma = require('../configs/db');
 const { itemsPerList, DataStatus } = require('../configs/constants');
+const { Prisma } = require('@prisma/client');
 
 const save = async (data) => {
   const created = await prisma.image.create({
@@ -47,27 +48,27 @@ const deleteById = async (id) => {
 };
 
 const fetchAll = async (skip, searchString, userId) => {
-  const data = await prisma.$transaction([
-    prisma.image.count(),
-    prisma.image.findMany({
-      skip,
-      take: itemsPerList,
-      orderBy: {
-        createdAt: 'desc',
-      },
-      where: {
-        userId,
-        ...(searchString && {
-          title: { search: searchString },
-        }),
-        ...(searchString && {
-          imageLabels: { search: searchString },
-        }),
-      },
-    }),
-  ]);
+  const searchStr = `${`%${searchString}%`}`;
 
-  return { totalRecords: data[0] || 0, images: data[1] || [] };
+  const data = await prisma.$queryRaw`
+                      SELECT * FROM images
+                      WHERE user_id = ${userId}         
+                      ${
+                        searchString
+                          ? Prisma.sql` AND ( title LIKE ${searchStr} or image_labels LIKE ${searchStr} );`
+                          : Prisma.empty
+                      }`;
+
+  return {
+    totalRecords: data.length || 0,
+    images:
+      data?.map((d) => ({
+        id: d.id,
+        title: d.title,
+        imageSrc: d.image_src,
+        imageLabels: d.image_labels,
+      })) || [],
+  };
 };
 
 module.exports = {

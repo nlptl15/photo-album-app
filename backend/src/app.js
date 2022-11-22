@@ -121,8 +121,9 @@ app.post('/image-upload', auth(), uploadImg.single('image'), async (req, res) =>
     data: {},
   };
   try {
-    const imagePath = req.file.path;
     const { body } = req;
+    const imagePath = req?.file?.path;
+
     console.log(req.body);
     const saveData = {
       title: body.title,

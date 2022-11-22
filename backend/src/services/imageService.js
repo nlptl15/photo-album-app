@@ -104,7 +104,9 @@ const deleteById = async (req) => {
     data: {},
   };
   const id = Number(req.params.id) || 0;
-
+  console.log(req.body);
+  console.log(req.params);
+  console.log(req.user);
   try {
     const isPasswordMatch = await bcrypt.compare(
       req.body.confirmedPassword || '',

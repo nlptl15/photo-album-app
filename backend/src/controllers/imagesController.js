@@ -46,7 +46,7 @@ const updateById = async (req, res, next) => {
 
 const deleteById = async (req, res, next) => {
   try {
-    const result = await imageService.deleteById(req.params);
+    const result = await imageService.deleteById(req);
 
     if (result.error) {
       next(ApiError(result.status, result.message));

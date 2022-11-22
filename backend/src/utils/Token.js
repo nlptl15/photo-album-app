@@ -37,6 +37,7 @@ const jwtVerify = async (payload, done) => {
         id: true,
         name: true,
         email: true,
+        password: true,
       },
     });
     if (!user) {

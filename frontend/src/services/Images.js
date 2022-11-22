@@ -6,7 +6,9 @@ import {
 } from '../utils/Api';
 
 export const getImages = async (skip, searchString) => {
-  const result = await getApiCall(`/images-data`);
+  const result = await getApiCall(
+    `/images-data?skip=${skip || 0}&searchString=${searchString || ''}`
+  );
   return result.data;
 };
 
