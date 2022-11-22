@@ -7,14 +7,14 @@ const TodoValidation = require('../validations/imageValidation');
 
 const router = express.Router();
 
-router.post('/', auth(), validate(TodoValidation.createTodo), imagesController.createImage);
+router.post('/', auth(), validate(ImageValidation.createImage), imagesController.createImage);
 router.get('/', auth(), imagesController.getList);
-router.get('/:id', auth(), validate(TodoValidation.viewById), imagesController.viewById);
-router.post('/:id', auth(), validate(TodoValidation.updateById), imagesController.updateById);
+router.get('/:id', auth(), validate(ImageValidation.viewById), imagesController.viewById);
+router.post('/:id', auth(), validate(ImageValidation.updateById), imagesController.updateById);
 router.post(
   '/:id/remove',
   auth(),
-  validate(TodoValidation.deleteById),
+  validate(ImageValidation.deleteById),
   imagesController.deleteById
 );
 
